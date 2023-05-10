@@ -11,13 +11,17 @@ namespace VendingMachine
         public string Name { get; set; }
         public int Price { get; set; }
         public char Productid { get; set; }
+
         public int Quantity { get; set; }
+        public int VendingMachineId { get; set; }
+
         public Product (string name, int price, char productid, int quantity)
         {
             Name = name;
             Price = price;
             Productid = productid;
-            Quantity = quantity;    
+            Quantity = quantity;
+           
         }
         public virtual VendingMachine VendingMachine { get; set; }
     }

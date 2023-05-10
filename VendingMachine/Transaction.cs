@@ -12,9 +12,11 @@ namespace VendingMachine
         
         public int Balance { get; set; }
         public int ProductId { get; set; }
-        public Denomination Change { get; set; }
+        
 
         public bool Success { get; set; }
+
+        public Denomination Change { get; set; }
 
         public virtual VendingMachine VendingMachine { get; set; }
 
@@ -36,6 +38,7 @@ namespace VendingMachine
                 Change = new Denomination();
                 Change.CalculateChange(this.Balance);
                 this.Success = true;
+
             }
             else
             {

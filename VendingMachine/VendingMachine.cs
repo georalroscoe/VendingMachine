@@ -8,9 +8,14 @@ namespace VendingMachine
 {
     public class VendingMachine
     {
-        public VendingMachine() {
+        public VendingMachine(int vendingMachineId) {
+            VendingMachineId = vendingMachineId;
+
         }
-        public char ProductId { get; set; }
+        public int VendingMachineId { get; set; }
+
+
+       
 
         public virtual ICollection<Product> Products { get; set;}
        
