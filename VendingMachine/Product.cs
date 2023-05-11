@@ -13,7 +13,7 @@ namespace VendingMachine
         public char Productid { get; set; }
 
         public int Quantity { get; set; }
-        public int VendingMachineId { get; set; }
+        
 
         public Product (string name, int price, char productid, int quantity)
         {
