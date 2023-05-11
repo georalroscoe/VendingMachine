@@ -43,7 +43,7 @@ namespace VendingMachine
 
         public void CheckForTransaction()
         {
-            if (Transaction != null)
+            if (Transaction == null)
             {
                 Transaction = new Transaction();
             }
@@ -67,7 +67,7 @@ namespace VendingMachine
         {
             CheckForTransaction();
             Product? product = _productList.FirstOrDefault(x => x.Productid == purchaseID);
-            if (product != null)
+            if (product == null)
             {
                 throw new Exception("product null");
             }

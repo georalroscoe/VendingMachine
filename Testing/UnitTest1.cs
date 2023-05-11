@@ -19,7 +19,7 @@ namespace UnitTesting
 
              for (int i = 0; i < 5; i++)
              {
-                 char productID = (char)(i + 97); // ASCII code for lowercase 'a' is 97
+                 char productID = (char)(i + 97); 
                  string productName = $"Product {productID}";
                  int productPrice = (i + 1) * 10;
                  int productQuantity = i + 1;
@@ -28,17 +28,42 @@ namespace UnitTesting
                  productList.Add(product);
              }
 
+            
+
              // act
              vendingMachine.AddProducts(productList);
 
-             // assert
-             Assert.AreEqual(vendingMachine.GetProductsCount(), 5);
+            Assert.AreEqual(5, vendingMachine.ProductList.Count);
+
+            // assert
+            Assert.AreEqual(vendingMachine.GetProductsCount(), 5);
              for (int i = 0; i < 5; i++)
              {
                  char productID = (char)(i + 97);
                  Assert.IsTrue(vendingMachine.HasProduct(productID));
              }
+
+
+            vendingMachine.AddMoney(200);
+            vendingMachine.AddMoney(100);
+            vendingMachine.AddMoney(1);
+
+            vendingMachine.ProductSelection('a');
+
+            var prod = productList.FirstOrDefault(x => x.Productid == 'a');
+
+            var change = vendingMachine.Transaction.Change;
+
+            Assert.AreEqual(0, change[0]);
+
+            Assert.AreEqual(0, prod.Quantity);
+            // Assert that the vending machine's balance has been updated correctly
+            Assert.AreEqual(340, vendingMachine.Transaction.Balance);
+            
+
+
         }
+
 
     }
 }
