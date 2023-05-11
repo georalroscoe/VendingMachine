@@ -8,8 +8,8 @@ namespace VendingMachine
 {
     public class VendingMachine
     {
-        public VendingMachine(int vendingMachineId) {
-            VendingMachineId = vendingMachineId;
+        public VendingMachine() {
+            
 
         }
         public int VendingMachineId { get; set; }
@@ -17,7 +17,7 @@ namespace VendingMachine
       
             private List<Product> _productList = new List<Product>();
 
-            // other code omitted for brevity
+           
 
             public void AddProducts(List<Product> products)
             {

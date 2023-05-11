@@ -2,7 +2,7 @@
 using System.Linq;
 
 
-namespace VendingMachine 
+namespace VendingMachine
 {
     internal class Program
     {
@@ -29,7 +29,7 @@ namespace VendingMachine
                 {
                     if (validDenominations.Contains(number))
                     {
-                        balance.AddToBalance(number);
+                       /* balance.AddToBalance(number);*/
                         
                         //logic
                     }
@@ -45,15 +45,15 @@ namespace VendingMachine
                    char productId = input[0];
                     if (validProducts.Contains(productId))
                     {
-                        var transaction = new Transaction(balance.CalculateTotal(), productId);
+                        /*var transaction = new Transaction(balance.CalculateTotal(), productId);
                         var product = productList.FirstOrDefault(x => x.Productid == productId);
                         transaction.Purchase(product);
                         if (transaction.Success)
                         {
-                            Console.WriteLine($"{transaction.Change.FiftyPQuantity} 60p");
+                            Console.WriteLine($"{transaction.Change.FiftyPQuantity} 50p");
                             return;
                          
-                        }
+                        }*/
                     }
                 }
                 else

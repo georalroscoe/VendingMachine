@@ -30,7 +30,7 @@ namespace VendingMachine
 
         }
 
-        public void Purchase(Product product)
+       /* public void Purchase(Product product)
         {
             
             if (this.Balance > product.Price)
@@ -47,6 +47,6 @@ namespace VendingMachine
                 return;
             }
         }
-
+       */
     }
 }
