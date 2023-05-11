@@ -14,6 +14,8 @@ namespace VendingMachine
         }
         public int VendingMachineId { get; set; }
 
+        public Transaction Transaction { get; set; }
+
       
             private List<Product> _productList = new List<Product>();
 
@@ -38,6 +40,51 @@ namespace VendingMachine
             {
                 get { return _productList; }
             }
+
+        public void CheckForTransaction()
+        {
+            if (Transaction != null)
+            {
+                Transaction = new Transaction();
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        public void AddMoney(int money)
+        {
+            CheckForTransaction();
+            HashSet<int> validDenominations = new HashSet<int> { 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
+            if (validDenominations.Contains(money))
+            {
+                Transaction.AddToBalance(money);
+            }
+        }
+
+        public void ProductSelection(char purchaseID)
+        {
+            CheckForTransaction();
+            Product? product = _productList.FirstOrDefault(x => x.Productid == purchaseID);
+            if (product != null)
+            {
+                throw new Exception("product null");
+            }
+            Transaction.SetRequiredPrice(product.Price);
+            Transaction.Purchase();
+            if (Transaction.Success)
+            {
+                product.Quantity -= 1;
+            }
+            else
+            {
+                throw new Exception("transaction unsuccessful");
+            }
+
+        }
+
+
         
 
 

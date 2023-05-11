@@ -7,39 +7,86 @@ using System.Threading.Tasks;
 
 namespace VendingMachine
 {
-    internal class Transaction
+    public class Transaction
     {
-        
+        public enum Denominations
+        {
+            Penny = 1,
+            TwoPence = 2,
+            FivePence = 5,
+            TenPence = 10,
+            TwentyPence = 20,
+            FiftyPence = 50,
+            OnePound = 100,
+            TwoPounds = 200,
+            FivePounds = 500,
+            TenPounds = 1000
+        }
+
+
+
+        public List<int> CalculateChange(int remainingBalance)
+        {
+            List<int> denominations = Enum.GetValues(typeof(Denominations)).Cast<int>().ToList();
+            denominations.Sort();
+            denominations.Reverse();
+
+            List<int> quantities = new List<int>();
+            foreach (int denomination in denominations)
+            {
+                if (remainingBalance >= denomination)
+                {
+                    int count = remainingBalance / denomination;
+                    remainingBalance -= count * denomination;
+                    quantities.Add(count);
+                }
+                else
+                {
+                    quantities.Add(0);
+                }
+            }
+
+            return quantities;
+        }
+
         public int Balance { get; set; }
-        public int ProductId { get; set; }
+        public int ProductPrice { get; set; }
         
 
         public bool Success { get; set; }
 
-        public Denomination Change { get; set; }
+        public List<int> Change { get; set; }
 
         //putting classes as a properrty in another class, also could i do this with product?  
 
-        public virtual VendingMachine VendingMachine { get; set; }
-
-        public Transaction(int balance, int productId) {
-            Balance= balance;
-            ProductId = productId;
-            Success = false;
-
+        public Transaction()
+        {
 
         }
 
-       /* public void Purchase(Product product)
+        public void AddToBalance(int amount)
+        {
+            Balance += amount;
+        }
+
+        public void SetRequiredPrice(int price)
+        {
+            ProductPrice = price;
+        }
+
+       
+
+       public void Purchase()
         {
             
-            if (this.Balance > product.Price)
+            if (Balance >= ProductPrice)
             {
-                product.Quantity -= 1;
-                Balance -= product.Price;
-                Change = new Denomination();
-                Change.CalculateChange(this.Balance);
-                this.Success = true;
+               
+                Balance -= ProductPrice;
+                Change = CalculateChange(Balance);
+                Success= true;
+
+                
 
             }
             else
@@ -47,6 +94,6 @@ namespace VendingMachine
                 return;
             }
         }
-       */
+       
     }
 }
