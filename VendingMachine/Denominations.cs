@@ -4,7 +4,9 @@ namespace VendingMachine
 {
     public class Denomination
     {
-        // Dictionary to map denomination values to property names
+
+       
+
         private readonly Dictionary<int, string> denominationMap = new Dictionary<int, string>()
         {
             { 1, "PennyQuantity" },
@@ -19,7 +21,7 @@ namespace VendingMachine
             { 1000, "TenPoundQuantity" }
         };
 
-        // Properties for each coin denomination and note value
+     
         public int PennyQuantity { get; set; }
         public int TwoPQuantity { get; set; }
         public int FivePQuantity { get; set; }
@@ -33,7 +35,7 @@ namespace VendingMachine
 
         public Denomination()
         {
-            // Constructor to set initial values of properties to 0
+            
             PennyQuantity = 0;
             TwoPQuantity = 0;
             FivePQuantity = 0;
@@ -46,21 +48,21 @@ namespace VendingMachine
             TenPoundQuantity = 0;
         }
 
-        /// <summary>
-        /// Adds one to the quantity of the specified denomination.
-        /// </summary>
-        /// <param name="denomination">The denomination to add to, represented as an integer.</param>
+       
         public void AddToBalance(int denomination)
         {
             if (denominationMap.TryGetValue(denomination, out string propertyName))
             {
-                // Use reflection to get the property and increment its value by 1
+              
                 PropertyInfo property = GetType().GetProperty(propertyName);
                 int currentValue = (int)property.GetValue(this);
                 property.SetValue(this, currentValue + 1);
             }
         }
+        //this is bad practice, whats the alternative
 
+        //could use an enum and store the values in a dictionary but then the class wouldnt have any porperties
+        //should i use an enum and store in properties?
         public int CalculateTotal()
         {
             int total = 0;
@@ -73,16 +75,16 @@ namespace VendingMachine
             return total;
         }
 
-        public void CalculateChange(int change)
+        public void CalculateChange(int remainingBalance)
         {
             int[] denominations = { 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1};
 
             foreach (int denomination in denominations)
             {
-                if (change >= denomination)
+                if (remainingBalance >= denomination)
                 {
-                    int count = change / denomination;
-                    change -= count * denomination;
+                    int count = remainingBalance / denomination;
+                    remainingBalance -= count * denomination;
 
                     switch (denomination)
                     {

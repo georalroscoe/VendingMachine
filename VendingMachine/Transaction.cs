@@ -18,6 +18,8 @@ namespace VendingMachine
 
         public Denomination Change { get; set; }
 
+        //putting classes as a properrty in another class, also could i do this with product?  
+
         public virtual VendingMachine VendingMachine { get; set; }
 
         public Transaction(int balance, int productId) {
@@ -28,13 +30,13 @@ namespace VendingMachine
 
         }
 
-        public void Purchase(Product prod)
+        public void Purchase(Product product)
         {
             
-            if (this.Balance > prod.Price)
+            if (this.Balance > product.Price)
             {
-                prod.Quantity -= 1;
-                Balance -= prod.Price;
+                product.Quantity -= 1;
+                Balance -= product.Price;
                 Change = new Denomination();
                 Change.CalculateChange(this.Balance);
                 this.Success = true;

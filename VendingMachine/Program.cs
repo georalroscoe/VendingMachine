@@ -8,14 +8,14 @@ namespace VendingMachine
     {
         static void Main(string[] args)
         {
-            HashSet<int> denominations = new HashSet<int> { 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
-            HashSet<char> products = new HashSet<char> { 'a', 'b', 'c', 'd', 'e', 'f', 'g' };
+            HashSet<int> validDenominations = new HashSet<int> { 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
+            HashSet<char> validProducts = new HashSet<char> { 'a', 'b', 'c', 'd', 'e', 'f', 'g' };
             var balance = new Denomination();
             List<Product> productList = new List<Product>();
             productList.Add(new Product("Product A", 100, 'a', 10));
             productList.Add(new Product("Product B", 200, 'b', 5));
             productList.Add(new Product("Product C", 150, 'c', 8));
-            var vendingMachine = new VendingMachine(1);
+            
             
 
             do {
@@ -27,10 +27,10 @@ namespace VendingMachine
 
                 if (int.TryParse(input, out number))
                 {
-                    if (denominations.Contains(number))
+                    if (validDenominations.Contains(number))
                     {
                         balance.AddToBalance(number);
-                        Console.WriteLine($"You entered the number: {number}");
+                        
                         //logic
                     }
                     else
@@ -42,8 +42,8 @@ namespace VendingMachine
                 else if (input.Length == 1)
                 {
                     
-                        char productId = input[0];
-                    if (products.Contains(productId))
+                   char productId = input[0];
+                    if (validProducts.Contains(productId))
                     {
                         var transaction = new Transaction(balance.CalculateTotal(), productId);
                         var product = productList.FirstOrDefault(x => x.Productid == productId);
@@ -51,6 +51,7 @@ namespace VendingMachine
                         if (transaction.Success)
                         {
                             Console.WriteLine($"{transaction.Change.FiftyPQuantity} 60p");
+                            return;
                          
                         }
                     }
@@ -65,13 +66,8 @@ namespace VendingMachine
             while (true);
 
 
-
-
-
-
-
-
-
         }
     }
 }
+
+
