@@ -2,6 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using VendingMachine;
+using Moq;
 
 
 namespace UnitTesting
@@ -9,6 +10,11 @@ namespace UnitTesting
     [TestClass]
     public class UnitTest1
     {
+
+
+
+
+
         [TestMethod]
 
         public void TestAddProductsToList()
