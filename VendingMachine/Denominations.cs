@@ -2,8 +2,9 @@
 
 namespace VendingMachine
 {
-    public class Denomination : IGetDenominations
+    public class Denomination
     {
+        public Denomination() { }
         public enum Denominations
         {
             Penny = 1,
@@ -18,11 +19,16 @@ namespace VendingMachine
             TenPounds = 1000
         }
 
+        public bool IsDenomination(int value)
+        {
+            return Enum.IsDefined(typeof(Denominations), value);
+        }
+
 
         public List<int> CalculateChange(int remainingBalance)
         {
             List<int> denominations = Enum.GetValues(typeof(Denominations)).Cast<int>().ToList();
-            denominations.Sort();
+            
             denominations.Reverse();
 
             List<int> quantities = new List<int>();

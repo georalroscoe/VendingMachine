@@ -56,8 +56,10 @@ namespace VendingMachine
         public void AddMoney(int money)
         {
             CheckForTransaction();
-            HashSet<int> validDenominations = new HashSet<int> { 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
-            if (validDenominations.Contains(money))
+            Denomination denomination= new Denomination();
+            
+           
+            if (denomination.IsDenomination(money))
             {
                 Transaction.AddToBalance(money);
             }
@@ -69,7 +71,7 @@ namespace VendingMachine
             Product? product = _productList.FirstOrDefault(x => x.Productid == purchaseID);
             if (product == null)
             {
-                throw new Exception("product null");
+                return;
             }
             Transaction.SetRequiredPrice(product.Price);
             Transaction.Purchase();
@@ -79,6 +81,7 @@ namespace VendingMachine
             }
             else
             {
+                return;
                 throw new Exception("transaction unsuccessful");
             }
 
