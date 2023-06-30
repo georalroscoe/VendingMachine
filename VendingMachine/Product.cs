@@ -1,28 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
+//using System.Threading.Tasks;
+//using Domain;
 
-namespace VendingMachine
-{
-    public class Product
-    {
-        public string Name { get; set; }
-        public int Price { get; set; }
-        public char Productid { get; set; }
+//namespace Domain;
 
-        public int Quantity { get; set; }
+//    public class Product
+//    {
+//        public Product(int price, char productId, string productname) {
+//            Price = price;
+//            ProductId = productId;
+//            ProductName = productname;
         
+//        }
+//        public int Price { get; set; }
+//        public char ProductId { get; set; }
+//        public string ProductName { get; set; }
+//    }
 
-        public Product (string name, int price, char productid, int quantity)
-        {
-            Name = name;
-            Price = price;
-            Productid = productid;
-            Quantity = quantity;
-           
-        }
-        public virtual VendingMachine VendingMachine { get; set; }
-    }
-}

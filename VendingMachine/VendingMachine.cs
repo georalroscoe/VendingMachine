@@ -3,106 +3,217 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Castle.Components.DictionaryAdapter.Xml;
+using Domain;
 
-namespace VendingMachine
+namespace Domain;
+
+public class VendingMachine
 {
-    public class VendingMachine
+
+    //vending machine from scratch and need to make sure that the change is in the machine. want to be able to inject currency denominations
+    //(make it work with any currency). dont worry anout exchcnage ratesm worry about creating it in an abstract way and innjecting
+    public VendingMachine(string currency)
     {
-        public VendingMachine() {
-            
-
-        }
-        public int VendingMachineId { get; set; }
-
-        public Transaction Transaction { get; set; }
-
-      
-            private List<Product> _productList = new List<Product>();
-
-           
-
-            public void AddProducts(List<Product> products)
-            {
-                _productList.AddRange(products);
-            }
-
-            public int GetProductsCount()
-            {
-                return _productList.Count;
-            }
-
-            public bool HasProduct(char productID)
-            {
-                return _productList.Any(p => p.Productid == productID);
-            }
-
-            public List<Product> ProductList
-            {
-                get { return _productList; }
-            }
-
-        public void CheckForTransaction()
-        {
-            if (Transaction == null)
-            {
-                Transaction = new Transaction();
-            }
-            else
-            {
-                return;
-            }
-        }
-
-        public void AddMoney(int money)
-        {
-            CheckForTransaction();
-            Denomination denomination= new Denomination();
-            
-           
-            if (denomination.IsDenomination(money))
-            {
-                Transaction.AddToBalance(money);
-            }
-        }
-
-        public void ProductSelection(char purchaseID)
-        {
-            CheckForTransaction();
-            Product? product = _productList.FirstOrDefault(x => x.Productid == purchaseID);
-            if (product == null)
-            {
-                return;
-            }
-            Transaction.SetRequiredPrice(product.Price);
-            Transaction.Purchase();
-            if (Transaction.Success)
-            {
-                product.Quantity -= 1;
-            }
-            else
-            {
-                return;
-                throw new Exception("transaction unsuccessful");
-            }
-
-        }
+        Currency = currency;
+        Stocks = new List<Stock>();
+        AddMoneyBank();
+        //take currecny out and use a dicitonary in the paramters of the constructor 
 
 
-        
-
-
-
-        //stock the vending machine with products and add this to a list on this class
-        //input money with testing
-        //add money to transaction balance, create new one if no instance already
-        //attmept to buy a product in the transaction using testing
-        //use the same logic to calcualt the change and put it in a list, update abalance and product quantity 
-
-
-
-
-       
-       
-        
     }
+
+
+
+    public Order Order { get; private set; }
+
+    public Dictionary<int, int> DenominationQuantities { get; private set; }
+
+    public String Currency { get; private set; }
+
+    public Order? Transaction { get; private set; }
+
+    public int Balance { get; private set; }
+
+
+    public List<Stock> Stocks { get; private set; }
+
+    public string SelectProduct(char productId)
+    {
+        Stock? stock = Stocks.FirstOrDefault(x => x.ProductId == productId);
+        if (stock == null)
+        {
+            return "no matching product";
+        }
+        if (stock.Quantity== 0)
+        {
+            return "No stock";
+        }
+
+        else if (stock.Price >= Balance)
+        {
+            return "Insufficient Balance";
+        }
+
+        Balance -= stock.Price;
+        
+
+        stock.RemoveStock();
+
+        return $"Here is your {stock.ProductName}";
+
+
+
+
+
+    }
+
+    public List<int> RequestChange()
+    {
+        return CalculateChange();
+    }
+
+
+    public void AddNewStock(char productId, string productName, int price, int quantity)
+    {
+        Stock stock = new Stock(productId, productName, price, quantity);
+        Stocks.Add(stock);
+    }
+
+    public void AddToExistingStock(char productId, int quantity)
+    {
+        Stock stock = Stocks.FirstOrDefault(x => x.ProductId == productId);
+        if (stock == null)
+        {
+            throw new Exception("product does not exist in the stock for this vending machine");
+        }
+        else
+        {
+
+            stock.AddQuantity(quantity);
+        }
+    }
+    public void AddMoneyBank()
+    {
+        if (Currency.ToLower() == "gbp")
+        {
+            DenominationQuantities = new Dictionary<int, int>()
+            {
+                { 1, 0 },
+                { 2, 0 },
+                { 5, 0 },
+                { 10, 0 },
+                { 20, 0 },
+
+                { 50, 0 },
+
+                { 100, 0 },
+                { 200, 0 },
+                { 500, 0 }
+
+
+            };
+        }
+        else if (Currency.ToLower() == "usd")
+        {
+            DenominationQuantities = new Dictionary<int, int>()
+            {
+                { 1, 0 },
+                { 5, 0 },
+                { 10, 0 },
+                { 25, 0 },
+                { 50, 0 },
+
+                { 100, 0 },
+
+                { 500, 0 }
+
+
+            };
+        }
+
+    }
+    //inhertiance!!!!!! abstract classes (only have to write calculate change method once in abstract class)
+    public int this[int key]
+    {
+        get => DenominationQuantities[key];
+        set => DenominationQuantities[key] = value;
+    }
+
+    public void AddStockList(List<Stock> stockList)
+    {
+        Stocks = stockList;
+    }
+
+    
+    public string AddMoney(int denomination)
+    {
+        if (DenominationQuantities.ContainsKey(denomination))
+        {
+            DenominationQuantities[denomination]++;
+            Balance += denomination;
+            return ($"You have inserted {denomination} and balance is now {Balance}");
+        }
+        else
+        {
+            return "incorrect denomination";
+        }
+       
+    }
+
+    public void FillQuantities()
+    {
+        foreach (var denomination in DenominationQuantities.Keys.ToList())
+        {
+            DenominationQuantities[denomination] = 1;
+        }
+
+
+    }
+
+    
+
+
+    private List<int> CalculateChange()
+    {
+        FillQuantities();
+        List<int> changeDenominations = new List<int>();
+
+        foreach (var denomination in DenominationQuantities.Keys.OrderByDescending(k => k))
+        {
+            int quantity = DenominationQuantities[denomination];
+            int denominationCount = Balance / denomination;
+
+            if (denominationCount > 0 && quantity > 0)
+            {
+                int actualCount = Math.Min(denominationCount, quantity);
+                DenominationQuantities[denomination] -= actualCount;
+
+                Balance -= (actualCount * denomination);
+                //Transaction.Balance -= actualCount * denomination;
+
+                for (int i = 0; i < actualCount; i++)
+                {
+                    changeDenominations.Add(denomination);
+                }
+            }
+
+            if (Balance == 0)
+                break;
+        }
+
+        if (Balance == 0)
+        {
+
+            return changeDenominations;
+        }
+        else
+        {
+            throw new Exception("insufficient change in machine");
+            
+        }
+    }
+
+
+
 }
