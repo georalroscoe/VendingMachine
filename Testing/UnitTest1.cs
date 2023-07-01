@@ -12,25 +12,36 @@ namespace UnitTesting
     [TestClass]
     public class UnitTest1
     {
-        private VendingMachine vendingMachine;
-        private Order order;
-
 
 
 
         [TestMethod]
 
-        public (VendingMachine, Order) Test1()
+        public VendingMachine Test1()
         {
-            
-            vendingMachine = new VendingMachine("gbp");
+            Dictionary<int, int> denominationQuantities = new Dictionary<int, int>()
+            {
+                { 1, 0 },
+                { 2, 0 },
+                { 5, 0 },
+                { 10, 0 },
+                { 20, 0 },
+
+                { 50, 0 },
+
+                { 100, 0 },
+                { 200, 0 },
+                { 500, 0 }
+
+
+            };
+            VendingMachine vendingMachine = new VendingMachine("gbp", denominationQuantities);
             //vendingMachine[100] = 10;
             //var x = vendingMachine[100];
             vendingMachine.AddMoneyBank();
             List<Stock> stockList = new List<Stock>();
             //List<Product> productList = new List<Product>();
-            order = new Order(0);
-
+           
             for (int i = 0; i < 5; i++)
             {
                 char productID = (char)(i + 97);
@@ -51,7 +62,7 @@ namespace UnitTesting
 
             vendingMachine.AddStockList(stockList);
             Assert.AreEqual(5, vendingMachine.Stocks.Count);
-            return (vendingMachine, order);
+            return vendingMachine;
 
         }
 
@@ -59,26 +70,25 @@ namespace UnitTesting
 
         [TestMethod]
 
-        public (VendingMachine, Order) Test2() //testing inserting correct denominations
+        public VendingMachine Test2() //testing inserting correct denominations
         {
-            (VendingMachine vendingMachine, Order order) = Test1();
-           vendingMachine.AddM(100);
-            vendingMachine.AttemptAdd(10);
-            vendingMachine.AttemptAdd(10);
-            Assert.AreEqual(120, order.Balance);
-            return (vendingMachine, order);
+            VendingMachine vendingMachine = Test1();
+           vendingMachine.AddMoney(100);
+            vendingMachine.AddMoney(10);
+            vendingMachine.AddMoney(10);
+            Assert.AreEqual(120, vendingMachine.Balance);
+            return vendingMachine;
         }
         [TestMethod]
         public void Test3() //testing purchasing a product 
         {
 
-            (VendingMachine vendingMachine, Order order) = Test2();
+            VendingMachine vendingMachine = Test2();
             int? beforeQuantity = vendingMachine.Stocks.FirstOrDefault(x => x.ProductId == 'a').Quantity;
-            List<int> change = order.Purchase('a');
-            List<int> testChange = new List<int> { 100, 10 };
+            string change = vendingMachine.SelectProduct('a');
             int? afterQuantity = vendingMachine.Stocks.FirstOrDefault(x => x.ProductId == 'a').Quantity + 1;
             Assert.AreEqual(afterQuantity, beforeQuantity);
-            Assert.AreEqual(change[0], testChange[0]);
+            
             //return (vendingMachine, order);
 
 
@@ -87,7 +97,7 @@ namespace UnitTesting
         [TestMethod]
         public void Test4() //testing adding a new product to the stock
         {
-            (VendingMachine vendingMachine, Order order) = Test1();
+            VendingMachine vendingMachine = Test1();
             vendingMachine.AddNewStock('z', "product z", 100, 3);
             Stock? stock = vendingMachine.Stocks.FirstOrDefault(x => x.ProductId == 'z');
             Assert.AreEqual(stock.ProductName, "product z");
@@ -96,9 +106,9 @@ namespace UnitTesting
         [TestMethod]
         public void Test5() //testing cancelling the order and giving change
         {
-            (VendingMachine vendingMachine, Order order) = Test1();
-            order.AttemptAdd(10);
-            List<int> change = order.Cancel();
+            VendingMachine vendingMachine = Test1();
+            vendingMachine.AddMoney(10);
+            List<int> change = vendingMachine.RequestChange();
             List<int> testChange = new List<int> { 10 };
             Assert.AreEqual(change[0], testChange[0]);
             //return (vendingMachine, order);
@@ -109,15 +119,17 @@ namespace UnitTesting
 
         public void Test6() //testing incorect denominations
         {
-            (VendingMachine vendingMachine, Order order) = Test1();
-            Assert.ThrowsException<Exception>(() => order.AttemptAdd(14));
+            VendingMachine vendingMachine = Test1();
+            string errorMessage = vendingMachine.AddMoney(14);
+            Assert.AreEqual(errorMessage, "incorrect denomination");
+
 
         }
         [TestMethod]
 
         public void Test7() //testing adding stock to already existing product
         {
-            (VendingMachine vendingMachine, Order order) = Test1();
+            VendingMachine vendingMachine = Test1();
             vendingMachine.AddToExistingStock('a', 5);
             Stock stock = vendingMachine.Stocks.FirstOrDefault(x => x.ProductId == 'a');
             Assert.AreEqual(stock.Quantity, 6);

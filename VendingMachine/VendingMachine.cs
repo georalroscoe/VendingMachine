@@ -13,11 +13,11 @@ public class VendingMachine
 
     //vending machine from scratch and need to make sure that the change is in the machine. want to be able to inject currency denominations
     //(make it work with any currency). dont worry anout exchcnage ratesm worry about creating it in an abstract way and innjecting
-    public VendingMachine(string currency)
+    public VendingMachine(string currency, Dictionary<int, int> denominationQuantities)
     {
         Currency = currency;
         Stocks = new List<Stock>();
-        AddMoneyBank();
+        DenominationQuantities = denominationQuantities;
         //take currecny out and use a dicitonary in the paramters of the constructor 
 
 
