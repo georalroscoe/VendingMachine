@@ -27,21 +27,7 @@ public class Stock
 
     public int Quantity { get; private set; }
 
-    //public Product Product { get; set; }
-
-
-
-    //public void AddProduct(Product product)
-    //{
-    //    Product = product;
-    //}
-
-    //public int GetProductPrice()
-    //{
-        
-    //    return Product.Price;
-    //}
-
+  
     public void AddQuantity(int quantity)
     {
         Quantity += quantity;
@@ -51,5 +37,5 @@ public class Stock
         Quantity -= 1;
     }
     
-    public virtual VendingMachine VendingMachine { get; private set; }
+   
 }

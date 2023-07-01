@@ -51,10 +51,6 @@ namespace UnitTesting
             return vendingMachine;
         }
 
-
-
-        
-
         [TestMethod]
         public void InsertCorrectDenominationsAndTestBalance() 
         {

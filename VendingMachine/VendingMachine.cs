@@ -11,27 +11,17 @@ namespace Domain;
 public class VendingMachine
 {
 
-    //vending machine from scratch and need to make sure that the change is in the machine. want to be able to inject currency denominations
-    //(make it work with any currency). dont worry anout exchcnage ratesm worry about creating it in an abstract way and innjecting
     public VendingMachine(Dictionary<int, int> denominationQuantities)
     {
        
         Stocks = new List<Stock>();
         DenominationQuantities = denominationQuantities;
-        //take currecny out and use a dicitonary in the paramters of the constructor 
+       
 
 
     }
 
-
-
-    public Order Order { get; private set; }
-
     public Dictionary<int, int> DenominationQuantities { get; private set; }
-
-   
-
-    public Order? Transaction { get; private set; }
 
     public int Balance { get; private set; }
 
@@ -62,18 +52,51 @@ public class VendingMachine
 
         return $"Here is your {stock.ProductName}";
 
-
-
-
-
     }
-
-    
 
     public void AddNewStock(char productId, string productName, int price, int quantity)
     {
         Stock stock = new Stock(productId, productName, price, quantity);
         Stocks.Add(stock);
+    }
+
+    public List<int> CalculateChange()
+    {
+        //FillQuantities();
+        List<int> changeDenominations = new List<int>();
+
+        foreach (var denomination in DenominationQuantities.Keys.OrderByDescending(k => k))
+        {
+            int quantity = DenominationQuantities[denomination];
+            int denominationCount = Balance / denomination;
+
+            if (denominationCount > 0 && quantity > 0)
+            {
+                int actualCount = Math.Min(denominationCount, quantity);
+                DenominationQuantities[denomination] -= actualCount;
+
+                Balance -= (actualCount * denomination);
+
+                for (int i = 0; i < actualCount; i++)
+                {
+                    changeDenominations.Add(denomination);
+                }
+            }
+
+            if (Balance == 0)
+                break;
+        }
+
+        //if (Balance == 0)
+        //{
+
+        return changeDenominations;
+        //}
+        //else
+        //{
+        //    throw new Exception("insufficient change in machine");
+
+        //}
     }
 
     public void AddToExistingStock(char productId, int quantity)
@@ -85,7 +108,6 @@ public class VendingMachine
         }
         else
         {
-
             stock.AddQuantity(quantity);
         }
     }
@@ -129,13 +151,8 @@ public class VendingMachine
     //    }
 
     //}
-    //inhertiance!!!!!! abstract classes (only have to write calculate change method once in abstract class)
-    public int this[int key]
-    {
-        get => DenominationQuantities[key];
-        set => DenominationQuantities[key] = value;
-    }
 
+  
     public void AddStockList(List<Stock> stockList)
     {
         Stocks = stockList;
@@ -148,7 +165,7 @@ public class VendingMachine
         {
             DenominationQuantities[denomination]++;
             Balance += denomination;
-            return ($"You have inserted {denomination} and balance is now {Balance}");
+            return ($"You have inserted {denomination} and your balance is now {Balance}");
         }
         else
         {
@@ -165,49 +182,6 @@ public class VendingMachine
         }
 
 
-    }
-
-    
-
-
-    public List<int> CalculateChange()
-    {
-        //FillQuantities();
-        List<int> changeDenominations = new List<int>();
-
-        foreach (var denomination in DenominationQuantities.Keys.OrderByDescending(k => k))
-        {
-            int quantity = DenominationQuantities[denomination];
-            int denominationCount = Balance / denomination;
-
-            if (denominationCount > 0 && quantity > 0)
-            {
-                int actualCount = Math.Min(denominationCount, quantity);
-                DenominationQuantities[denomination] -= actualCount;
-
-                Balance -= (actualCount * denomination);
-                //Transaction.Balance -= actualCount * denomination;
-
-                for (int i = 0; i < actualCount; i++)
-                {
-                    changeDenominations.Add(denomination);
-                }
-            }
-
-            if (Balance == 0)
-                break;
-        }
-
-        //if (Balance == 0)
-        //{
-
-            return changeDenominations;
-        //}
-        //else
-        //{
-        //    throw new Exception("insufficient change in machine");
-            
-        //}
     }
 
     public void AddToBalance(int amount)
