@@ -13,9 +13,9 @@ public class VendingMachine
 
     //vending machine from scratch and need to make sure that the change is in the machine. want to be able to inject currency denominations
     //(make it work with any currency). dont worry anout exchcnage ratesm worry about creating it in an abstract way and innjecting
-    public VendingMachine(string currency, Dictionary<int, int> denominationQuantities)
+    public VendingMachine(Dictionary<int, int> denominationQuantities)
     {
-        Currency = currency;
+       
         Stocks = new List<Stock>();
         DenominationQuantities = denominationQuantities;
         //take currecny out and use a dicitonary in the paramters of the constructor 
@@ -29,7 +29,7 @@ public class VendingMachine
 
     public Dictionary<int, int> DenominationQuantities { get; private set; }
 
-    public String Currency { get; private set; }
+   
 
     public Order? Transaction { get; private set; }
 
@@ -68,11 +68,7 @@ public class VendingMachine
 
     }
 
-    public List<int> RequestChange()
-    {
-        return CalculateChange();
-    }
-
+    
 
     public void AddNewStock(char productId, string productName, int price, int quantity)
     {
@@ -93,46 +89,46 @@ public class VendingMachine
             stock.AddQuantity(quantity);
         }
     }
-    public void AddMoneyBank()
-    {
-        if (Currency.ToLower() == "gbp")
-        {
-            DenominationQuantities = new Dictionary<int, int>()
-            {
-                { 1, 0 },
-                { 2, 0 },
-                { 5, 0 },
-                { 10, 0 },
-                { 20, 0 },
+    //public void AddMoneyBank()
+    //{
+    //    if (Currency.ToLower() == "gbp")
+    //    {
+    //        DenominationQuantities = new Dictionary<int, int>()
+    //        {
+    //            { 1, 0 },
+    //            { 2, 0 },
+    //            { 5, 0 },
+    //            { 10, 0 },
+    //            { 20, 0 },
 
-                { 50, 0 },
+    //            { 50, 0 },
 
-                { 100, 0 },
-                { 200, 0 },
-                { 500, 0 }
-
-
-            };
-        }
-        else if (Currency.ToLower() == "usd")
-        {
-            DenominationQuantities = new Dictionary<int, int>()
-            {
-                { 1, 0 },
-                { 5, 0 },
-                { 10, 0 },
-                { 25, 0 },
-                { 50, 0 },
-
-                { 100, 0 },
-
-                { 500, 0 }
+    //            { 100, 0 },
+    //            { 200, 0 },
+    //            { 500, 0 }
 
 
-            };
-        }
+    //        };
+    //    }
+    //    else if (Currency.ToLower() == "usd")
+    //    {
+    //        DenominationQuantities = new Dictionary<int, int>()
+    //        {
+    //            { 1, 0 },
+    //            { 5, 0 },
+    //            { 10, 0 },
+    //            { 25, 0 },
+    //            { 50, 0 },
 
-    }
+    //            { 100, 0 },
+
+    //            { 500, 0 }
+
+
+    //        };
+    //    }
+
+    //}
     //inhertiance!!!!!! abstract classes (only have to write calculate change method once in abstract class)
     public int this[int key]
     {
@@ -174,9 +170,9 @@ public class VendingMachine
     
 
 
-    private List<int> CalculateChange()
+    public List<int> CalculateChange()
     {
-        FillQuantities();
+        //FillQuantities();
         List<int> changeDenominations = new List<int>();
 
         foreach (var denomination in DenominationQuantities.Keys.OrderByDescending(k => k))
@@ -202,18 +198,21 @@ public class VendingMachine
                 break;
         }
 
-        if (Balance == 0)
-        {
+        //if (Balance == 0)
+        //{
 
             return changeDenominations;
-        }
-        else
-        {
-            throw new Exception("insufficient change in machine");
+        //}
+        //else
+        //{
+        //    throw new Exception("insufficient change in machine");
             
-        }
+        //}
     }
 
-
+    public void AddToBalance(int amount)
+    {
+        Balance += amount;
+    }
 
 }

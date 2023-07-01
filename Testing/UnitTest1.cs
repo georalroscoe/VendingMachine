@@ -12,12 +12,7 @@ namespace UnitTesting
     [TestClass]
     public class UnitTest1
     {
-
-
-
-        [TestMethod]
-
-        public VendingMachine Test1()
+        private VendingMachine InitializeVendingMachine()
         {
             Dictionary<int, int> denominationQuantities = new Dictionary<int, int>()
             {
@@ -26,22 +21,17 @@ namespace UnitTesting
                 { 5, 0 },
                 { 10, 0 },
                 { 20, 0 },
-
                 { 50, 0 },
-
                 { 100, 0 },
                 { 200, 0 },
                 { 500, 0 }
-
-
             };
-            VendingMachine vendingMachine = new VendingMachine("gbp", denominationQuantities);
-            //vendingMachine[100] = 10;
-            //var x = vendingMachine[100];
-            vendingMachine.AddMoneyBank();
+
+            VendingMachine vendingMachine = new VendingMachine(denominationQuantities);
+            
+
             List<Stock> stockList = new List<Stock>();
-            //List<Product> productList = new List<Product>();
-           
+
             for (int i = 0; i < 5; i++)
             {
                 char productID = (char)(i + 97);
@@ -49,77 +39,124 @@ namespace UnitTesting
                 int productPrice = (i + 1) * 10;
                 int productQuantity = i + 1;
 
-                //Product product = new Product(productPrice, productID, productName);
                 Stock stock = new Stock(productID, productName, productPrice, productQuantity);
-                //stock.AddProduct(product);
                 stockList.Add(stock);
-                //productDetailsList.Add(productDetails);
             }
-            // foreach(Stock product in productList)
-            //{
-            //    product.AddProducts(productDetailsList);
-            //}
 
             vendingMachine.AddStockList(stockList);
-            Assert.AreEqual(5, vendingMachine.Stocks.Count);
-            return vendingMachine;
 
+            
+            Assert.AreEqual(5, vendingMachine.Stocks.Count);
+
+            return vendingMachine;
         }
+
+
 
         
 
         [TestMethod]
-
-        public VendingMachine Test2() //testing inserting correct denominations
+        public void InsertCorrectDenominationsAndTestBalance() 
         {
-            VendingMachine vendingMachine = Test1();
-           vendingMachine.AddMoney(100);
+            VendingMachine vendingMachine = InitializeVendingMachine();
+            vendingMachine.AddMoney(100);
             vendingMachine.AddMoney(10);
             vendingMachine.AddMoney(10);
             Assert.AreEqual(120, vendingMachine.Balance);
-            return vendingMachine;
-        }
-        [TestMethod]
-        public void Test3() //testing purchasing a product 
-        {
-
-            VendingMachine vendingMachine = Test2();
-            int? beforeQuantity = vendingMachine.Stocks.FirstOrDefault(x => x.ProductId == 'a').Quantity;
-            string change = vendingMachine.SelectProduct('a');
-            int? afterQuantity = vendingMachine.Stocks.FirstOrDefault(x => x.ProductId == 'a').Quantity + 1;
-            Assert.AreEqual(afterQuantity, beforeQuantity);
+            Assert.AreEqual(1, vendingMachine.DenominationQuantities[100]);
+            Assert.AreEqual(2, vendingMachine.DenominationQuantities[10]);
             
-            //return (vendingMachine, order);
+        }
+        [TestMethod]
+        public void SelectProductAndTestQuantityAndBalance()  
+        {
 
+            VendingMachine vendingMachine = InitializeVendingMachine();
+            vendingMachine.AddMoney(200);
+            Stock stock = vendingMachine.Stocks.FirstOrDefault(x => x.ProductId == 'a');
+            int? beforeQuantity = stock.Quantity;
+            vendingMachine.SelectProduct('a');
+            int? afterQuantity = stock.Quantity + 1;
+            Assert.AreEqual(afterQuantity, beforeQuantity);
+            Assert.AreEqual(vendingMachine.Balance, 200 - stock.Price);
+            
+        }
+        [TestMethod]
+        public void SelectOutOfQuantityProduct()
+        {
+
+            VendingMachine vendingMachine = InitializeVendingMachine();
+            vendingMachine.AddMoney(200);
+            Stock? stock = vendingMachine.Stocks.FirstOrDefault(x => x.ProductId == 'a');
+            stock.RemoveStock();
+            vendingMachine.SelectProduct('a');
+            string errorMessage = vendingMachine.SelectProduct('a');
+            Assert.AreEqual(errorMessage, "No stock");
+            Assert.AreEqual(vendingMachine.Balance, 200);
+
+        }
+        [TestMethod]
+        public void SelectInvalidProduct()
+        {
+
+            VendingMachine vendingMachine = InitializeVendingMachine();
+            vendingMachine.AddMoney(200);
+            Stock? stock = vendingMachine.Stocks.FirstOrDefault(x => x.ProductId == 'q');
+            if (stock != null)
+            {
+                stock.RemoveStock();
+            }
+            vendingMachine.SelectProduct('q');
+            string errorMessage = vendingMachine.SelectProduct('q');
+            Assert.AreEqual(errorMessage, "no matching product");
+            Assert.AreEqual(vendingMachine.Balance, 200);
 
         }
 
+
         [TestMethod]
-        public void Test4() //testing adding a new product to the stock
+        public void AddProductAndTestItsThere()
         {
-            VendingMachine vendingMachine = Test1();
+            VendingMachine vendingMachine = InitializeVendingMachine();
             vendingMachine.AddNewStock('z', "product z", 100, 3);
             Stock? stock = vendingMachine.Stocks.FirstOrDefault(x => x.ProductId == 'z');
-            Assert.AreEqual(stock.ProductName, "product z");
+            Assert.AreEqual(stock.ProductId, 'z');
         }
 
         [TestMethod]
-        public void Test5() //testing cancelling the order and giving change
+        public void RequestChangeAndCheckIfValid() 
         {
-            VendingMachine vendingMachine = Test1();
+            VendingMachine vendingMachine = InitializeVendingMachine();
             vendingMachine.AddMoney(10);
-            List<int> change = vendingMachine.RequestChange();
+            List<int> change = vendingMachine.CalculateChange();
             List<int> testChange = new List<int> { 10 };
             Assert.AreEqual(change[0], testChange[0]);
-            //return (vendingMachine, order);
+            
 
         }
 
         [TestMethod]
-
-        public void Test6() //testing incorect denominations
+        public void RequestChangeThatIsNotInMoneyBank()
         {
-            VendingMachine vendingMachine = Test1();
+            VendingMachine vendingMachine = InitializeVendingMachine();
+            vendingMachine.AddToBalance(200); //adding to balance but not money bank
+            vendingMachine.AddMoney(10);
+            vendingMachine.AddMoney(20);
+            vendingMachine.AddMoney(5);
+            List<int> change = vendingMachine.CalculateChange();//should return the max amount of change possible
+            List<int> testChange = new List<int> { 20, 10, 5 };
+            Assert.AreEqual(change[0], testChange[0]); 
+
+
+        }
+
+
+
+        [TestMethod]
+
+        public void InsertIncorrectDenominationAndTestError()
+        {
+            VendingMachine vendingMachine = InitializeVendingMachine();
             string errorMessage = vendingMachine.AddMoney(14);
             Assert.AreEqual(errorMessage, "incorrect denomination");
 
@@ -127,10 +164,10 @@ namespace UnitTesting
         }
         [TestMethod]
 
-        public void Test7() //testing adding stock to already existing product
+        public void LoadStockAndTestQuantity() 
         {
-            VendingMachine vendingMachine = Test1();
-            vendingMachine.AddToExistingStock('a', 5);
+            VendingMachine vendingMachine = InitializeVendingMachine();
+            vendingMachine.AddToExistingStock('a', 5); // product 'a' is initialised with a quantity of 1
             Stock stock = vendingMachine.Stocks.FirstOrDefault(x => x.ProductId == 'a');
             Assert.AreEqual(stock.Quantity, 6);
         }
