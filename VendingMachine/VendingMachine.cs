@@ -17,8 +17,6 @@ public class VendingMachine
         Stocks = new List<Stock>();
         DenominationQuantities = denominationQuantities;
        
-
-
     }
 
     public Dictionary<int, int> DenominationQuantities { get; private set; }
@@ -39,8 +37,7 @@ public class VendingMachine
         {
             return "No stock";
         }
-
-        else if (stock.Price >= Balance)
+        if (stock.Price >= Balance)
         {
             return "Insufficient Balance";
         }
@@ -104,7 +101,7 @@ public class VendingMachine
         Stock stock = Stocks.FirstOrDefault(x => x.ProductId == productId);
         if (stock == null)
         {
-            throw new Exception("product does not exist in the stock for this vending machine");
+            throw new Exception("product does not exist for this vending machine");
         }
         else
         {
@@ -174,7 +171,7 @@ public class VendingMachine
        
     }
 
-    public void FillQuantities()
+    private void FillQuantities()
     {
         foreach (var denomination in DenominationQuantities.Keys.ToList())
         {
